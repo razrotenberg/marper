@@ -1,3 +1,7 @@
-import { hello } from '../../dist/index.js'
+import { Client } from '../../dist/index.js'
 
-console.log(hello('raz'));
+const client = new Client()
+
+window.addEventListener('load', () => {
+    client.start();
+})
