@@ -1,0 +1,19 @@
+{
+  "name": "marper",
+  "version": "0.1.0",
+  "description": "A library for playing, looping and programming MIDI notes arpeggios and sequences",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/levosos/marper.git"
+  },
+  "author": "levosos",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/levosos/marper/issues"
+  },
+  "homepage": "https://github.com/levosos/marper#readme"
+}
