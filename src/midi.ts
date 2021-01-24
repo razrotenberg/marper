@@ -1,4 +1,4 @@
-interface Note {
+export interface Note {
     channel: number;
     number: number;
     velocity: number;
@@ -7,7 +7,6 @@ interface Note {
 export class MIDI {
     private outputs: WebMidi.MIDIOutput[] = []; // all available MIDI outputs
     private output?: WebMidi.MIDIOutput; // the selected MIDI output
-    private notes: Note[] = []; // active notes
 
     start() {
         console.debug('[MIDI]', 'Starting');
@@ -31,28 +30,11 @@ export class MIDI {
         }
     }
 
-    click() {
-        // clear previously deleted notes
-        this.notes = this.notes.filter((item) => { return item; });
-
-        // temporary demonstration
-        if (this.notes.length === 0) {
-            this.on({ channel: 0, number: 60, velocity: 127 });
-        } else {
-            for (let idx in this.notes) {
-                this.off(idx);
-            }
-        }
-    }
-
-    private on(note: Note) {
+    on(note: Note) {
         this.output?.send([0x90 + note.channel, note.number, note.velocity]);
-        this.notes.push(note);
     }
 
-    private off(idx: any) {
-        const note = this.notes[idx];
+    off(note: Note) {
         this.output?.send([0x80 + note.channel, note.number, 0]);
-        delete this.notes[idx];
     }
 }
