@@ -7,6 +7,12 @@ enum State {
     Inactive, // this layer can be safely deleted
 }
 
+interface Configuration {
+    root: number;
+    mode: string;
+    steps: number;
+}
+
 export class Layer {
     private midi: MIDI;
     private degree: number;
@@ -38,24 +44,42 @@ export class Layer {
 
     click() {
         if (this.state === State.Active) {
-            let number = undefined;
+            const configuration: Configuration = {
+                root: 60, // C4
+                mode: 'ionian',
+                steps: 4, // seventh chords (4 note chords)
+            };
 
-            const steps = 4; // we play seventh chords (4 note chords)
-            for (let index = 0; index < steps; ++index) {
-                if (this.subdivisions == (Clock.Subdivisions / steps) * index) {
+            let number = undefined; // the midi note number to be played
+
+            for (let index = 0; index < configuration.steps; ++index) {
+                if (this.subdivisions == (Clock.Subdivisions / configuration.steps) * index) {
                     // we use the major scale for now
                     const scale: number[] = [0 /* P1 */, 2 /* M2 */, 4 /* M3 */, 5 /* P4 */, 7 /* P5 */, 9 /* M6 */, 11 /* M7 */];
 
-                    // we build chords by stacking thirds starting from the scale degree
-                    // this can be done by skipping every other note of the diatonic scale
-                    const degree = this.degree - 1 + (index * 2);
+                    // all modern modes of the major scale
+                    const modes = ['ionian', 'dorian', 'phrygian', 'lydian', 'mixolydian', 'aeolian', 'locrian'];
 
-                    // note that `degree` can be greater than 7 and we need
-                    // to take the interval an octave higher
-                    const interval = scale[degree % scale.length] + (Math.floor(degree / scale.length) * 12 /* P8 */);
+                    // get the offset of the mode in the scale
+                    const offset = modes.indexOf(configuration.mode.toLowerCase());
+                    if (offset === -1) {
+                        console.warn('[Layer]', `Unrecognized mode '${configuration.mode}'`);
+                        continue;
+                    }
+
+                    // we build chords by stacking thirds starting from the scale degree.
+                    // this can be done by skipping every other note of the diatonic scale.
+                    // we calculate the scale degree of the current chord degree.
+                    // use the mode offset as well to get the correct interval.
+                    const degree = offset + (this.degree - 1) + (index * 2);
+
+                    // the degree can be greater than 7 and we need to take
+                    // the interval some octaves higher in such cases.
+                    // we also normalize the interval according to the mode.
+                    const interval = scale[degree % scale.length] + (Math.floor(degree / scale.length) * 12 /* P8 */) - scale[offset];
 
                     // calculate the final midi note number
-                    number = 60 /* C4 */ + interval;
+                    number = configuration.root + interval;
                 }
             }
 
