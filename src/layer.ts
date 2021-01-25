@@ -38,26 +38,26 @@ export class Layer {
 
     click() {
         if (this.state === State.Active) {
-            const intervals: number[] = [0 /* P1 */, 4 /* M3 */, 7 /* P5 */]; // intervals of a major triad
-
             let number = undefined;
 
-            intervals.forEach((interval, index) => {
-                if (this.subdivisions == (Clock.Subdivisions / intervals.length) * index) {
-                    const root = 60; // currently hard-coded C4
-                    const scale: number[] = [0 /* P1 */, 2 /* M2 */, 4 /* M3 */, 5 /* P4 */, 7 /* P5 */, 9 /* M6 */, 11 /* M7 */]; // major scale - wwhwwwh
+            const steps = 4; // we play seventh chords (4 note chords)
+            for (let index = 0; index < steps; ++index) {
+                if (this.subdivisions == (Clock.Subdivisions / steps) * index) {
+                    // we use the major scale for now
+                    const scale: number[] = [0 /* P1 */, 2 /* M2 */, 4 /* M3 */, 5 /* P4 */, 7 /* P5 */, 9 /* M6 */, 11 /* M7 */];
 
-                    // calculate the degree offset
-                    let octaver = 0;
-                    let degree = this.degree;
-                    while (degree > 7) {
-                        degree -= 7;
-                        octaver += 12; // P8
-                    }
+                    // we build chords by stacking thirds starting from the scale degree
+                    // this can be done by skipping every other note of the diatonic scale
+                    const degree = this.degree - 1 + (index * 2);
 
-                    number = root + scale[degree - 1] + octaver + interval;
+                    // note that `degree` can be greater than 7 and we need
+                    // to take the interval an octave higher
+                    const interval = scale[degree % scale.length] + (Math.floor(degree / scale.length) * 12 /* P8 */);
+
+                    // calculate the final midi note number
+                    number = 60 /* C4 */ + interval;
                 }
-            });
+            }
 
             if (number) {
                 this.on({ channel: 0, number: number, velocity: 127 });
