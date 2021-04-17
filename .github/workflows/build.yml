@@ -1,0 +1,52 @@
+on: push
+jobs:
+  build-lib:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+      with:
+        node-version: 14
+    - run: npm install
+    - run: npm run build
+    - uses: actions/upload-artifact@v2
+      with:
+        name: lib
+        path: dist/
+  build-demo:
+    needs: build-lib
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: demo
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+      with:
+        node-version: 14
+    - run: npm install
+    - uses: actions/download-artifact@v2
+      with:
+        name: lib
+        path: ./dist
+    - run: npm run build
+    - uses: actions/upload-artifact@v2
+      with:
+        name: demo
+        path: demo/dist/
+  publish-demo:
+    needs: build-demo
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        ref: github-pages
+    - uses: actions/download-artifact@v2
+      with:
+        name: demo
+    - run: |
+        git config --global user.name 'levosos'
+        git config --global user.email 'razhaleva@gmail.com'
+        git commit -am "Publishing to GitHub Pages" || echo "nothing to commit"
+        git push
