@@ -47,5 +47,6 @@ jobs:
     - run: |
         git config --global user.name 'levosos'
         git config --global user.email 'razhaleva@gmail.com'
+        git add .
         git commit -am "Publishing to GitHub Pages"
         git push
