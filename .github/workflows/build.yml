@@ -30,3 +30,7 @@ jobs:
         name: lib
         path: ./dist
     - run: npm run build
+    - uses: actions/upload-artifact@v2
+      with:
+        name: demo
+        path: demo/dist/
