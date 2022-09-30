@@ -47,6 +47,6 @@ jobs:
         name: demo
     - run: |
         git config --global user.name 'levosos'
-        git config --global user.email 'razhaleva@gmail.com'
+        git config --global user.email 'raz.rotenberg@gmail.com'
         git commit -am "Publishing to GitHub Pages" || echo "nothing to commit"
         git push

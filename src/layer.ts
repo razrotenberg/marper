@@ -1,5 +1,5 @@
-import { Clock } from './clock';
 import { MIDI, Note } from './midi';
+import { Time } from './time';
 
 enum State {
     Active,
@@ -53,7 +53,7 @@ export class Layer {
             let number = undefined; // the midi note number to be played
 
             for (let index = 0; index < configuration.steps; ++index) {
-                if (this.subdivisions == (Clock.Subdivisions / configuration.steps) * index) {
+                if (this.subdivisions == (Time.Subdivisions / configuration.steps) * index) {
                     // we use the major scale for now
                     const scale: number[] = [0 /* P1 */, 2 /* M2 */, 4 /* M3 */, 5 /* P4 */, 7 /* P5 */, 9 /* M6 */, 11 /* M7 */];
 
@@ -88,7 +88,7 @@ export class Layer {
             }
 
             // advance to the next subdivision
-            this.subdivisions = (this.subdivisions + 1) % Clock.Subdivisions;
+            this.subdivisions = (this.subdivisions + 1) % Time.Subdivisions;
         } else if (this.state === State.Stopped) {
             this.off();
             this.state = State.Inactive;
